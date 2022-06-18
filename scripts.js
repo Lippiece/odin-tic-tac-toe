@@ -44,6 +44,11 @@ selectNoughts.addEventListener("click", () => {
 	/*
 	* Support functions
 	*/
+	function makeUnclickable() {
+		for (const div of boardSection.children) {
+			div.classList.add("unclickable");
+		}
+	}
 	function checkWinner() {
 		const combos = [
 			[0, 1, 2],
