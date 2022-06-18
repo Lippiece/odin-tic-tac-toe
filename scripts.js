@@ -12,6 +12,9 @@ const board       = [[],[],[]],
 /*
 * Check variables
 */
+let playsCrosses = true,
+	started;
+
 /*
 * Control event listeners
 */
