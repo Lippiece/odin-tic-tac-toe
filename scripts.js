@@ -2,6 +2,13 @@
 * Arrays
 */
 const board       = [[],[],[]],
+	sections        = document.querySelectorAll("section"),
+	controlsSection = sections[0],
+	selectCrosses   = controlsSection.children[0],
+	selectNoughts   = controlsSection.children[1],
+	resetButton     = controlsSection.children[2],
+	boardSection    = sections[1],
+	popup           = document.querySelector(".popup");
 /*
 * Check variables
 */
