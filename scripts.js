@@ -52,6 +52,15 @@ selectNoughts.addEventListener("click", () => {
 	* Fills the board with empty content
 	*/
 	const filler = state => {
+			return {
+				fillContent: () => {
+					const convertedPosition = state.position[0] * 3 + state.position[1];
+
+					boardSection.children[convertedPosition].innerHTML = state.content;
+
+					return state;
+				}
+			};
 		},
 		/*
 		* Adds event listener to a field
