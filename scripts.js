@@ -62,6 +62,14 @@ function initialize(field) {
 	/*
 	* Support functions
 	*/
+	resetButton.addEventListener("click", () => {
+		for (const x of board) {
+			for (const y of x) {
+				// TODO https://www.w3schools.com/howto/howto_js_snackbar.asp
+				y.resetContent();
+			}
+		}
+	});
 	function makeUnclickable() {
 		for (const div of boardSection.children) {
 			div.classList.add("unclickable");
@@ -143,6 +151,17 @@ function initialize(field) {
 			};
 		},
 		resetter = state => {
+			return {
+				resetContent: () => {
+					state.content = "";
+					state.element.innerHTML = "";
+					state.element.classList.remove("cross", "nought", "winner", "unclickable");
+					started = false;
+					playsCrosses = true;
+
+					return state;
+				}
+			};
 		},
 		/*
 
