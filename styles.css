@@ -10,6 +10,7 @@ body * {
 }
 
 .unclickable {
+	pointer-events: none;
 }
 
 .controls {
