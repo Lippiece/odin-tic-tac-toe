@@ -37,6 +37,24 @@ selectNoughts.addEventListener("click", () => {
 /*
 * Initializer
 */
+function initialize(field) {
+	for (let posI = 0; posI < 3; posI++) {
+		for (let posY = 0; posY < 3; posY++) {
+			const fieldContainer = document.createElement("div");
+
+			boardSection.append(fieldContainer);
+			board[posI][posY] = field(
+				{
+					position: [posI, posY],
+					content: "",
+					element: fieldContainer
+				}
+			);
+			board[posI][posY].fillContent();
+			board[posI][posY].addEventListeners();
+		}
+	}
+}
 /*
 * Main block
 */
@@ -120,4 +138,5 @@ selectNoughts.addEventListener("click", () => {
 				eventer(state));
 		};
 
+	initialize(field);
 }
