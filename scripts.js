@@ -118,6 +118,32 @@ function initialize(field) {
 		/*
 		* Adds event listener to a field
 		*/
+		eventer = state => {
+			return {
+				addEventListeners: () => {
+					state.element.addEventListener("click", () => {
+						if (state.content === "") {
+							state.content = playsCrosses ? "X" : "O";
+							// add class
+							state.element.classList.add(playsCrosses ? "cross" : "nought");
+							// change content
+							state.element.innerHTML = state.content;
+							// change turn
+							playsCrosses = !playsCrosses;
+							// check winner
+							if (checkWinner()) {
+								makeUnclickable();
+							}
+							if (!started) {
+								started = true;
+							}
+						}
+					});
+				}
+			};
+		},
+		resetter = state => {
+		},
 		/*
 
 		* Field object constructor
