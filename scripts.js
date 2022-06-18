@@ -18,6 +18,22 @@ let playsCrosses = true,
 /*
 * Control event listeners
 */
+selectCrosses.addEventListener("click", () => {
+	if (!started) {
+		playsCrosses = true;
+		selectCrosses.classList.add("selected");
+		selectNoughts.classList.remove("selected");
+	}
+	started = true;
+});
+selectNoughts.addEventListener("click", () => {
+	if(!started) {
+		playsCrosses = false;
+		selectNoughts.classList.add("selected");
+		selectCrosses.classList.remove("selected");
+	}
+	started = true;
+});
 /*
 * Initializer
 */
