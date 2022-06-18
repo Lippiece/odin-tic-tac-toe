@@ -44,6 +44,36 @@ selectNoughts.addEventListener("click", () => {
 	/*
 	* Support functions
 	*/
+	function checkWinner() {
+		const combos = [
+			[0, 1, 2],
+			[3, 4, 5],
+			[6, 7, 8],
+			[0, 3, 6],
+			[1, 4, 7],
+			[2, 5, 8],
+			[0, 4, 8],
+			[2, 4, 6]
+		];
+
+		for (const combo of combos) {
+			const [a, b, c] = combo;
+
+			// Check if all three are the same
+			if (boardSection.children[a].innerHTML === boardSection.children[b].innerHTML &&
+				boardSection.children[b].innerHTML === boardSection.children[c].innerHTML &&
+				boardSection.children[a].innerHTML !== "") {
+				// Add class to winning elements
+				boardSection.children[a].classList.add("winner");
+				boardSection.children[b].classList.add("winner");
+				boardSection.children[c].classList.add("winner");
+				popup.classList.add("show");
+				popup.innerHTML = `${boardSection.children[a].innerHTML} wins!`;
+
+				return true;
+			}
+		}
+	}
 	/*
 	* -er functions
 
