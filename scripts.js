@@ -1,53 +1,60 @@
 /*
-* Arrays
-*/
-const board       = [[],[],[]],
-	sections        = document.querySelectorAll("section"),
+ * Arrays
+ */
+const board = [[], [], []],
+	sections        = document.querySelectorAll( "section" ),
 	controlsSection = sections[0],
 	selectCrosses   = controlsSection.children[0],
 	selectNoughts   = controlsSection.children[1],
 	resetButton     = controlsSection.children[2],
 	boardSection    = sections[1],
-	popup           = document.querySelector(".popup");
+	popup           = document.querySelector( ".popup" );
 /*
-* Check variables
-*/
+ * Check variables
+ */
 let playsCrosses = true,
 	started;
 
 /*
-* Control event listeners
-*/
-selectCrosses.addEventListener("click", () => {
-	if (!started) {
+ * Control event listeners
+ */
+selectCrosses.addEventListener( "click", () =>
+{
+	if ( !started )
+	{
 		playsCrosses = true;
-		selectCrosses.classList.add("selected");
-		selectNoughts.classList.remove("selected");
+		selectCrosses.classList.add( "selected" );
+		selectNoughts.classList.remove( "selected" );
 	}
 	started = true;
-});
-selectNoughts.addEventListener("click", () => {
-	if(!started) {
+} );
+selectNoughts.addEventListener( "click", () =>
+{
+	if( !started )
+	{
 		playsCrosses = false;
-		selectNoughts.classList.add("selected");
-		selectCrosses.classList.remove("selected");
+		selectNoughts.classList.add( "selected" );
+		selectCrosses.classList.remove( "selected" );
 	}
 	started = true;
-});
+} );
 /*
-* Initializer
-*/
-function initialize(field) {
-	for (let posI = 0; posI < 3; posI++) {
-		for (let posY = 0; posY < 3; posY++) {
-			const fieldContainer = document.createElement("div");
+ * Initializer
+ */
+function initialize( field )
+{
+	for ( let posI = 0; posI < 3; posI++ )
+	{
+		for ( let posY = 0; posY < 3; posY++ )
+		{
+			const fieldContainer = document.createElement( "div" );
 
-			boardSection.append(fieldContainer);
+			boardSection.append( fieldContainer );
 			board[posI][posY] = field(
 				{
 					position: [posI, posY],
-					content: "",
-					element: fieldContainer
+					content : "",
+					element : fieldContainer,
 				}
 			);
 			board[posI][posY].fillContent();
@@ -56,26 +63,30 @@ function initialize(field) {
 	}
 }
 /*
-* Main block
-*/
+ * Main block
+ */
 {
 	/*
-	* Support functions
-	*/
-	resetButton.addEventListener("click", () => {
-		for (const x of board) {
-			for (const y of x) {
+	 * Support functions
+	 */
+	resetButton.addEventListener( "click", () =>
+	{
+		for ( const axisX of board )
+		{
+			for ( const axisY of axisX )
+			{
 				// TODO https://www.w3schools.com/howto/howto_js_snackbar.asp
-				y.resetContent();
+				axisY.resetContent();
 			}
 		}
-	});
-	function makeUnclickable() {
-		for (const div of boardSection.children) {
-			div.classList.add("unclickable");
-		}
+	} );
+	function makeUnclickable()
+	{
+		for ( const field of boardSection.children )
+		{ field.classList.add( "unclickable" ) }
 	}
-	function checkWinner() {
+	function checkWinner()
+	{
 		const combos = [
 			[0, 1, 2],
 			[3, 4, 5],
@@ -84,104 +95,121 @@ function initialize(field) {
 			[1, 4, 7],
 			[2, 5, 8],
 			[0, 4, 8],
-			[2, 4, 6]
+			[2, 4, 6],
 		];
 
-		for (const combo of combos) {
-			const [a, b, c] = combo;
+		for ( const combo of combos )
+		{
+			const [first, second, third] = combo;
 
 			// Check if all three are the same
-			if (boardSection.children[a].innerHTML === boardSection.children[b].innerHTML &&
-				boardSection.children[b].innerHTML === boardSection.children[c].innerHTML &&
-				boardSection.children[a].innerHTML !== "") {
-				// Add class to winning elements
-				boardSection.children[a].classList.add("winner");
-				boardSection.children[b].classList.add("winner");
-				boardSection.children[c].classList.add("winner");
-				popup.classList.add("show");
-				popup.innerHTML = `${boardSection.children[a].innerHTML} wins!`;
+			if ( boardSection.children[first].innerHTML === boardSection.children[second].innerHTML &&
+				boardSection.children[second].innerHTML === boardSection.children[third].innerHTML &&
+				boardSection.children[first].innerHTML !== "" )
+			{
+				// Add classes to winning elements
+				boardSection.children[first].classList.add( "winner" );
+				boardSection.children[second].classList.add( "winner" );
+				boardSection.children[third].classList.add( "winner" );
+				popup.classList.add( "show" );
+				popup.innerHTML = `${ boardSection.children[first].innerHTML } wins!`;
 
 				return true;
 			}
 		}
 	}
 	/*
-	* -er functions
-
- 	*/
+	 * -er functions
+	 *
+	 */
 	/*
-	* Fills the board with empty content
-	*/
-	const filler = state => {
+	 * Fills the board with empty content
+	 */
+	const filler = state =>
+		{
 			return {
-				fillContent: () => {
-					const convertedPosition = state.position[0] * 3 + state.position[1];
+				fillContent: () =>
+				{
+					const convertedPosition = ( state.position[0] * 3 ) + state.position[1];
 
 					boardSection.children[convertedPosition].innerHTML = state.content;
 
 					return state;
-				}
+				},
 			};
 		},
 		/*
-		* Adds event listener to a field
-		*/
-		eventer = state => {
+		 * Adds event listener to a field
+		 */
+		eventer = state =>
+		{
 			return {
-				addEventListeners: () => {
-					state.element.addEventListener("click", () => {
-						if (state.content === "") {
+				addEventListeners: () =>
+				{
+					state.element.addEventListener( "click", () =>
+					{
+						if ( state.content === "" )
+						{
 							state.content = playsCrosses ? "X" : "O";
-							// add class
-							state.element.classList.add(playsCrosses ? "cross" : "nought");
-							// change content
+							// Add class
+							state.element.classList.add( playsCrosses ? "cross" : "nought" );
+							// Change content
 							state.element.innerHTML = state.content;
-							// change turn
+							// Change turn
 							playsCrosses = !playsCrosses;
-							// check winner
-							if (checkWinner()) {
-								makeUnclickable();
-							}
-							if (!started) {
-								started = true;
-							}
+							// Check winner
+							if ( checkWinner() )
+							{ makeUnclickable() }
+							if ( !started )
+							{ started = true }
 						}
-					});
-				}
+					} );
+				},
 			};
 		},
-		resetter = state => {
+		resetter = state =>
+		{
 			return {
-				resetContent: () => {
-					state.content = "";
+				resetContent: () =>
+				{
+					state.content           = "";
 					state.element.innerHTML = "";
-					state.element.classList.remove("cross", "nought", "winner", "unclickable");
-					started = false;
+					state.element.classList.remove( "cross", "nought", "winner", "unclickable" );
+					started      = false;
 					playsCrosses = true;
 
 					return state;
-				}
+				},
 			};
 		},
 		/*
-
-		* Field object constructor
-		*/
-		field = (properties) => {
+		 *  Tester = state => {
+		 * 		Return {
+		 * 			Test: () => {
+		 * 				State.toFill = true;
+		 * 				Return state.toFill;
+		 * 			}
+		 * 		};
+		 * 	},
+		 */
+		/*
+		 * Field object constructor
+		 */
+		field = ( properties ) =>
+		{
 			 const state = {
 				position: properties.position,
 				toFill  : properties.toFill,
 				content : properties.content,
-				element : properties.element
+				element : properties.element,
 			};
 
-			return Object.assign(
-				{},
-				filler(state),
-				resetter(state),
-				// tester(state),
-				eventer(state));
+			return {
+				...filler( state ),
+				...resetter( state ),
+				// ...tester( state ),
+				...eventer( state ) };
 		};
 
-	initialize(field);
+	initialize( field );
 }
