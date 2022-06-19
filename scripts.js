@@ -67,24 +67,50 @@ function initialize( field )
  */
 {
 	/*
-	 * Support functions
+	 * Main listeners
 	 */
 	resetButton.addEventListener( "click", () =>
 	{
-		for ( const axisX of board )
+		for ( const rowAxis of board )
 		{
-			for ( const axisY of axisX )
+			for ( const field of rowAxis )
 			{
-				// TODO https://www.w3schools.com/howto/howto_js_snackbar.asp
-				axisY.resetContent();
+				field.resetContent();
 			}
 		}
 	} );
+	/*
+	 * Auxillary functions
+	 */
 	function makeUnclickable()
 	{
 		for ( const field of boardSection.children )
 		{ field.classList.add( "unclickable" ) }
 	}
+	/**
+	 * It adds the endgame classes and removes the unneded ones, then
+	 * shows the popup with the winning player's symbol
+	 * @param first - the first index of the winning combination
+	 * @param second - the second element in the winning row
+	 * @param third - the third cell in the winning row
+	 */
+	function finalizeWin( first, second, third )
+	{
+		boardSection.children[first].classList.add( "winner" );
+		boardSection.children[second].classList.add( "winner" );
+		boardSection.children[third].classList.add( "winner" );
+		boardSection.classList.add( "win" );
+		selectCrosses.classList.remove( "selected" );
+		selectNoughts.classList.remove( "selected" );
+		resetButton.classList.add( "highlight" );
+		popup.classList.add( "shown" );
+		popup.innerHTML = `${ boardSection.children[first].innerHTML } wins!`;
+		makeUnclickable();
+	}
+	/**
+	 * If the first, second, and third elements of a combo are the same and not empty, then add needed classes and show the toast.
+	 * @returns true if there is a winner.
+	 */
 	function checkWinner()
 	{
 		const combos = [
@@ -104,21 +130,40 @@ function initialize( field )
 
 			// Check if all three are the same
 			if ( boardSection.children[first].innerHTML === boardSection.children[second].innerHTML &&
-				boardSection.children[second].innerHTML === boardSection.children[third].innerHTML &&
-				boardSection.children[first].innerHTML !== "" )
+    boardSection.children[second].innerHTML === boardSection.children[third].innerHTML &&
+    boardSection.children[first].innerHTML !== "" )
 			{
-				// Add classes to winning elements
-				boardSection.children[first].classList.add( "winner" );
-				boardSection.children[second].classList.add( "winner" );
-				boardSection.children[third].classList.add( "winner" );
-				popup.classList.add( "show" );
-				popup.innerHTML = `${ boardSection.children[first].innerHTML } wins!`;
+				finalizeWin( first, second, third );
 
 				return true;
 			}
 		}
 	}
 	/**
+	 * It fills the field with either an "X" or an "O" depending on the value of the playsCrosses variable
+	 * @param state - The state of the field.
+	 * @param selection - The selection object created when the user clicked on the field.
+	 */
+	function fillField( state, selection )
+	{
+		if ( playsCrosses )
+		{
+			state.content = "X";
+			state.element.classList.add( "cross", "unclickable" );
+			state.element.innerHTML = state.content;
+			playsCrosses            = !playsCrosses;
+
+			return;
+		}
+		state.content = "O";
+		state.element.classList.add( "nought", "unclickable" );
+		state.element.innerHTML = state.content;
+		playsCrosses            = !playsCrosses;
+		selection.fillContent();
+		checkWinner();
+	}
+	/**
+	 */
 	/**
 	 * It adds the appropriate class to the clicked element and sets its content.
 	 * @param state - The state of the cell.
@@ -152,7 +197,7 @@ function initialize( field )
 			};
 		},
 		/*
-		 * Adds event listener to a field
+		 * Adds an event listener to a field
 		 */
 		eventer = state =>
 		{
@@ -186,6 +231,9 @@ function initialize( field )
 					state.content           = "";
 					state.element.innerHTML = "";
 					state.element.classList.remove( "cross", "nought", "winner", "unclickable" );
+					boardSection.classList.remove( "win" );
+					resetButton.classList.remove( "highlight" );
+					popup.classList.remove( "shown" );
 					started      = false;
 					playsCrosses = true;
 
@@ -203,12 +251,12 @@ function initialize( field )
 		 * 		};
 		 * 	},
 		 */
-		/*
-		 * Field object constructor
-		 */
+		 /*
+		  * Field object constructor
+		  */
 		field = ( properties ) =>
 		{
-			 const state = {
+			const state = {
 				position: properties.position,
 				toFill  : properties.toFill,
 				content : properties.content,
@@ -218,8 +266,8 @@ function initialize( field )
 			return {
 				...filler( state ),
 				...resetter( state ),
-				// ...tester( state ),
-				...eventer( state ) };
+				...eventer( state ),
+			};
 		};
 
 	initialize( field );
