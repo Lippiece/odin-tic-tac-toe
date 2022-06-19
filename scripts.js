@@ -129,13 +129,7 @@ function initialize( field )
 		{
 			return {
 				fillContent: () =>
-				{
-					const convertedPosition = ( state.position[0] * 3 ) + state.position[1];
-
-					boardSection.children[convertedPosition].innerHTML = state.content;
-
-					return state;
-				},
+				{ state.element.innerHTML = state.content },
 			};
 		},
 		/*
