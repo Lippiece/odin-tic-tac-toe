@@ -24,13 +24,15 @@ body * {
 	height: fit-content;
 	border: none;
 	background-color: #444;
-	color: #ddd;
-	font-size: 1em;
-	font-weight: bold;
-	cursor: pointer;
-	align-self: center;
-	justify-self: center;
-	border-radius: 0.5em;
+.controls > button.selected,
+button.highlight {
+	background-color: #ddd;
+	color           : #444;
+}
+
+.controls > button.highlight {
+	font-size: 2em;
+	padding  : 0.5em 0;
 }
 
 .board {
