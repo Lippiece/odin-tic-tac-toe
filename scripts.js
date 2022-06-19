@@ -7,6 +7,7 @@ const board = [[], [], []],
 	selectCrosses   = controlsSection.children[0],
 	selectNoughts   = controlsSection.children[1],
 	resetButton     = controlsSection.children[2],
+	testButton      = controlsSection.children[3],
 	boardSection    = sections[1],
 	popup           = document.querySelector( ".popup" );
 /*
@@ -79,6 +80,13 @@ function initialize( field )
 			}
 		}
 	} );
+	testButton.addEventListener( "click", () =>
+	{
+		const selection = selectFieldAi();
+
+		selection.makeMove();
+		checkWinner();
+	} );
 	/*
 	 * Auxillary functions
 	 */
@@ -144,26 +152,45 @@ function initialize( field )
 	 * @param state - The state of the field.
 	 * @param selection - The selection object created when the user clicked on the field.
 	 */
-	function fillField( state, selection )
-	{
-		if ( playsCrosses )
-		{
-			state.content = "X";
-			state.element.classList.add( "cross", "unclickable" );
-			state.element.innerHTML = state.content;
-			playsCrosses            = !playsCrosses;
+	// function fillField( state, selection )
+	// {
+	// 	if ( playsCrosses )
+	// 	{
+	// 		state.content = "X";
+	// 		state.element.classList.add( "cross", "unclickable" );
+	// 		state.element.innerHTML = state.content;
+	// 		playsCrosses            = !playsCrosses;
 
-			return;
-		}
-		state.content = "O";
-		state.element.classList.add( "nought", "unclickable" );
-		state.element.innerHTML = state.content;
-		playsCrosses            = !playsCrosses;
-		selection.fillContent();
-		checkWinner();
-	}
+	// 		return;
+	// 	}
+	// 	state.content = "O";
+	// 	state.element.classList.add( "nought", "unclickable" );
+	// 	state.element.innerHTML = state.content;
+	// 	playsCrosses            = !playsCrosses;
+	// 	selection.fillContent();
+	// 	checkWinner();
+	// }
 	/**
+	 * It selects a random empty field on the board and returns it.
+	 * @returns the selection variable.
 	 */
+	function selectFieldAi()
+	{
+		let posI = Math.floor( Math.random() * 3 ),
+			posY = Math.floor( Math.random() * 3 ),
+			selection = board[posI][posY],
+			convertedPosition = ( posI * 3 ) + posY;
+
+		do
+		{
+			posI              = Math.floor( Math.random() * 3 );
+			posY              = Math.floor( Math.random() * 3 );
+			selection         = board[posI][posY];
+			convertedPosition = ( posI * 3 ) + posY;
+		} while ( boardSection.children[convertedPosition].innerHTML !== "" );
+
+		return selection;
+	}
 	/**
 	 * It adds the appropriate class to the clicked element and sets its content.
 	 * @param state - The state of the cell.
@@ -215,10 +242,10 @@ function initialize( field )
 						playsCrosses = !playsCrosses;
 						// Check winner
 						checkWinner();
-							{ makeUnclickable() }
-							if ( !started )
-							{ started = true }
-						}
+						// const selection = selectFieldAi();
+
+						// selection.makeMove();
+						// checkWinner();
 					} );
 				},
 			};
@@ -241,16 +268,16 @@ function initialize( field )
 				},
 			};
 		},
-		/*
-		 *  Tester = state => {
-		 * 		Return {
-		 * 			Test: () => {
-		 * 				State.toFill = true;
-		 * 				Return state.toFill;
-		 * 			}
-		 * 		};
-		 * 	},
-		 */
+		opponent = state =>
+		{
+			return {
+				makeMove: ( selection ) =>
+				{
+					fillField( state, selection );
+					checkWinner();
+				},
+			};
+		},
 		 /*
 		  * Field object constructor
 		  */
@@ -267,6 +294,7 @@ function initialize( field )
 				...filler( state ),
 				...resetter( state ),
 				...eventer( state ),
+				...opponent( state ),
 			};
 		};
 
