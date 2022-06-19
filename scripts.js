@@ -118,6 +118,25 @@ function initialize( field )
 			}
 		}
 	}
+	/**
+	/**
+	 * It adds the appropriate class to the clicked element and sets its content.
+	 * @param state - The state of the cell.
+	 */
+	function addClasses( state )
+	{
+		if ( playsCrosses )
+		{
+			state.content = "X";
+			state.element.classList.add( "cross", "unclickable" );
+		}
+
+		else
+		{
+			state.content = "O";
+			state.element.classList.add( "nought", "unclickable" );
+		}
+	}
 	/*
 	 * -er functions
 	 *
@@ -142,17 +161,15 @@ function initialize( field )
 				{
 					state.element.addEventListener( "click", () =>
 					{
-						if ( state.content === "" )
-						{
-							state.content = playsCrosses ? "X" : "O";
-							// Add class
-							state.element.classList.add( playsCrosses ? "cross" : "nought" );
-							// Change content
-							state.element.innerHTML = state.content;
-							// Change turn
-							playsCrosses = !playsCrosses;
-							// Check winner
-							if ( checkWinner() )
+						started = true;
+						// Add classes to the field
+						addClasses( state );
+						// Change content
+						state.element.innerHTML = state.content;
+						// Change turn
+						playsCrosses = !playsCrosses;
+						// Check winner
+						checkWinner();
 							{ makeUnclickable() }
 							if ( !started )
 							{ started = true }
