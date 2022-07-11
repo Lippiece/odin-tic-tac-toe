@@ -129,3 +129,13 @@ button.highlight {
 	transition      : background-color 0.1s ease-out;
 	color           : white;
 }
+
+.board > div.availableX {
+	background-color: rgb( 0 172 23 / 50% );
+	transition      : background-color 0.1s ease-out;
+}
+
+.board > div.availableY {
+	background-color: rgb( 68 155 189 / 50% );
+	transition      : background-color 0.1s ease-out;
+}

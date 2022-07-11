@@ -9,7 +9,17 @@ const board = [[], [], []],
 	resetButton     = controlsSection.children[2],
 	testButton      = controlsSection.children[3],
 	boardSection    = sections[1],
-	popup           = document.querySelector( ".popup" );
+	popup = document.querySelector( ".popup" ),
+	combos = [
+		[0, 1, 2],
+		[3, 4, 5],
+		[6, 7, 8],
+		[0, 3, 6],
+		[1, 4, 7],
+		[2, 5, 8],
+		[0, 4, 8],
+		[2, 4, 6],
+	];
 /*
  * Check variables
  */
@@ -72,19 +82,15 @@ function initialize( field )
 	 */
 	resetButton.addEventListener( "click", () =>
 	{
-		for ( const rowAxis of board )
-		{
-			for ( const field of rowAxis )
-			{
-				field.resetContent();
-			}
-		}
+		// Reset every field
+		board.map( ( axis ) => axis.map( ( field ) => field.resetContent() ) );
+		// For ( const fieldContainer of boardSection.children )  fieldContainer.classList.remove( "cross", "nought", "winner", "availableX" ) ;
 	} );
 	testButton.addEventListener( "click", () =>
 	{
-		const selection = selectFieldAi();
+		const selection = opponentSelectRandomField();
 
-		selection.makeMove();
+		selection.makeMove( selection );
 		checkWinner();
 	} );
 	/*
@@ -121,25 +127,14 @@ function initialize( field )
 	 */
 	function checkWinner()
 	{
-		const combos = [
-			[0, 1, 2],
-			[3, 4, 5],
-			[6, 7, 8],
-			[0, 3, 6],
-			[1, 4, 7],
-			[2, 5, 8],
-			[0, 4, 8],
-			[2, 4, 6],
-		];
-
 		for ( const combo of combos )
 		{
 			const [first, second, third] = combo;
 
 			// Check if all three are the same
-			if ( boardSection.children[first].innerHTML === boardSection.children[second].innerHTML &&
-    boardSection.children[second].innerHTML === boardSection.children[third].innerHTML &&
-    boardSection.children[first].innerHTML !== "" )
+			if ( boardSection.children[first].innerHTML === boardSection.children[second].innerHTML
+    && boardSection.children[second].innerHTML === boardSection.children[third].innerHTML
+    && boardSection.children[first].innerHTML !== "" )
 			{
 				finalizeWin( first, second, third );
 
@@ -152,29 +147,11 @@ function initialize( field )
 	 * @param state - The state of the field.
 	 * @param selection - The selection object created when the user clicked on the field.
 	 */
-	// function fillField( state, selection )
-	// {
-	// 	if ( playsCrosses )
-	// 	{
-	// 		state.content = "X";
-	// 		state.element.classList.add( "cross", "unclickable" );
-	// 		state.element.innerHTML = state.content;
-	// 		playsCrosses            = !playsCrosses;
-
-	// 		return;
-	// 	}
-	// 	state.content = "O";
-	// 	state.element.classList.add( "nought", "unclickable" );
-	// 	state.element.innerHTML = state.content;
-	// 	playsCrosses            = !playsCrosses;
-	// 	selection.fillContent();
-	// 	checkWinner();
-	// }
 	/**
 	 * It selects a random empty field on the board and returns it.
 	 * @returns the selection variable.
 	 */
-	function selectFieldAi()
+	function opponentSelectRandomField()
 	{
 		let posI = Math.floor( Math.random() * 3 ),
 			posY = Math.floor( Math.random() * 3 ),
@@ -208,6 +185,60 @@ function initialize( field )
 			state.content = "O";
 			state.element.classList.add( "nought", "unclickable" );
 		}
+		state.element.classList.remove( "availableX", "availableY" );
+	}
+	function showAvailableCombos()
+	{
+		// Cleanup before
+		const suggestions = [];
+
+		for ( const fieldContainer of boardSection.children )
+		{ fieldContainer.classList.remove( "availableX", "availableY" ) }
+		for ( const combo of combos )
+		{
+			const [first, second, third] = combo,
+				content1 = boardSection.children[first].innerHTML,
+				content2 = boardSection.children[second].innerHTML,
+				content3 = boardSection.children[third].innerHTML;
+
+			if ( !playsCrosses
+			&& ( content1 === "" || content1 === "X" )
+			&& ( content2 === "" || content2 === "X" )
+			&& ( content3 === "" || content3 === "X" ) )
+			{
+				/*
+				 * BoardSection.children[first].classList.add( "availableX" );
+				 * boardSection.children[second].classList.add( "availableX" );
+				 * boardSection.children[third].classList.add( "availableX" );
+				 */
+				suggestions.push(	boardSection.children[first],
+					boardSection.children[second],
+					boardSection.children[third] );
+			}
+			else
+			if ( playsCrosses
+			&& ( content1 === "" || content1 === "O" )
+			&& ( content2 === "" || content2 === "O" )
+			&& ( content3 === "" || content3 === "O" ) )
+			{
+				boardSection.children[first].classList.add( "availableY" );
+				boardSection.children[second].classList.add( "availableY" );
+				boardSection.children[third].classList.add( "availableY" );
+				suggestions.push(	boardSection.children[first],
+					boardSection.children[second],
+					boardSection.children[third] );
+
+			}
+			function getRandomIntInclusive( min, max )
+			{
+				min = Math.ceil( min );
+				max = Math.floor( max );
+
+				return Math.floor( Math.random() * ( ( max - min + 1 ) + min ) );
+			}
+
+			return suggestions[getRandomIntInclusive( 0, suggestions.length-1 )];
+		}
 	}
 	/*
 	 * -er functions
@@ -220,7 +251,14 @@ function initialize( field )
 		{
 			return {
 				fillContent: () =>
-				{ state.element.innerHTML = state.content },
+				{
+					state.element.innerHTML = state.content;
+					if( started )
+					{
+						addClasses( state );
+						showAvailableCombos();
+					}
+				},
 			};
 		},
 		/*
@@ -234,18 +272,17 @@ function initialize( field )
 					state.element.addEventListener( "click", () =>
 					{
 						started = true;
-						// Add classes to the field
 						addClasses( state );
-						// Change content
 						state.element.innerHTML = state.content;
-						// Change turn
-						playsCrosses = !playsCrosses;
-						// Check winner
-						checkWinner();
-						// const selection = selectFieldAi();
+						playsCrosses            = !playsCrosses;
+						// For ( const fieldContainer of boardSection.children )  fieldContainer.classList.remove( "availableX" ) ;
+						if( !checkWinner() )
+						{
+							const selection = showAvailableCombos();
 
-						// selection.makeMove();
-						// checkWinner();
+							selection.makeMove( selection );
+							checkWinner();
+						}
 					} );
 				},
 			};
@@ -257,7 +294,7 @@ function initialize( field )
 				{
 					state.content           = "";
 					state.element.innerHTML = "";
-					state.element.classList.remove( "cross", "nought", "winner", "unclickable" );
+					state.element.classList.remove( "cross", "nought", "winner", "unclickable"/* , "availableX", "availableY" */ );
 					boardSection.classList.remove( "win" );
 					resetButton.classList.remove( "highlight" );
 					popup.classList.remove( "shown" );
@@ -273,7 +310,18 @@ function initialize( field )
 			return {
 				makeMove: ( selection ) =>
 				{
-					fillField( state, selection );
+					if ( playsCrosses )
+					{
+						state.content = "X";
+						selection.fillContent();
+						playsCrosses = !playsCrosses;
+						checkWinner();
+
+						return;
+					}
+					state.content = "O";
+					selection.fillContent();
+					playsCrosses = !playsCrosses;
 					checkWinner();
 				},
 			};
